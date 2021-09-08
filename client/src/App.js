@@ -1,16 +1,36 @@
 import React from "react";
 import GlobalStyle from "./components/GlobalStyle";
-import {ApolloClient, ApolloProvider, InMemoryCache} from "@apollo/client";
 import Pages from "./pages";
+import {ApolloClient, ApolloProvider, createHttpLink} from "@apollo/client";
+import {InMemoryCache} from "apollo-cache-inmemory";
+import {setContext} from "apollo-link-context";
 
 const uri = process.env.REACT_APP_API_URI;
+const httpLink = createHttpLink({uri});
 const cache = new InMemoryCache();
 
+const authLink = setContext((_, {headers}) => {
+	return {
+		headers: {
+			...headers,
+			authorization: localStorage.getItem("token") || "",
+		},
+	};
+});
+
 const client = new ApolloClient({
-	uri,
+	link: authLink.concat(httpLink),
 	cache,
+	resolvers: {},
 	connectToDevTools: true,
 });
+
+const data = {
+	isLoggedIn: !!localStorage.getItem("token"),
+};
+
+cache.writeData({data});
+client.onResetStore(() => cache.writeData({data}));
 
 function App() {
 	return (
