@@ -11,6 +11,7 @@ module.exports = {
 		if (!user) {
 			throw new AuthenticationError("You must be signed in to create a note");
 		}
+		console.log(user);
 		return await models.Note.create({
 			content: args.content,
 			author: mongoose.Types.ObjectId(user.id),

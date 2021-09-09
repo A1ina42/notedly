@@ -45,7 +45,7 @@ const Header = (props) => {
 					<ButtonAsLink
 						onClick={() => {
 							localStorage.removeItem("token");
-							client.resetStore();
+							client.cache.restore();
 							client.cache.writeData({data: {isLoggedIn: false}});
 							props.history.push("/");
 						}}>
